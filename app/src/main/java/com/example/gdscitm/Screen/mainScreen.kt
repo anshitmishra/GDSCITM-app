@@ -62,7 +62,6 @@ fun BottomBar() {
     }
 }
 
-
 @Composable
 fun TopBar() {
     TopAppBar(modifier = Modifier
