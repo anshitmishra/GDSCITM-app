@@ -10,24 +10,18 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.gdscitm.ui.theme.GDSCITMTheme
+import com.example.gdscitm.navigation.Navigation
+import com.example.gdscitm.ui.theme.GTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            GDSCITMTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    Greeting("Android")
-                }
-            }
+            Navigation()
         }
     }
 }
+
 
 @Composable
 fun Greeting(name : String) {
@@ -37,7 +31,7 @@ fun Greeting(name : String) {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    GDSCITMTheme {
+    GTheme {
         Greeting("Android")
     }
 }

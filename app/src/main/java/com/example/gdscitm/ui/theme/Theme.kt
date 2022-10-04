@@ -28,7 +28,7 @@ private val LightColorPalette = lightColors(
 )
 
 @Composable
-fun GDSCITMTheme(darkTheme : Boolean = isSystemInDarkTheme(), content : @Composable () -> Unit) {
+fun GTheme(darkTheme : Boolean = isSystemInDarkTheme(), content : @Composable () -> Unit) {
     val colors = if (darkTheme) {
         DarkColorPalette
     } else {
