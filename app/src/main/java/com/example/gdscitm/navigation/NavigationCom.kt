@@ -4,8 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.gdscitm.Screen.Login
-import com.example.gdscitm.Screen.SplashAnimation
+import com.example.gdscitm.Screen.*
 
 @Composable
 fun Navigation() {
@@ -14,9 +13,20 @@ fun Navigation() {
         composable(route = Navigation.Splash.route){
             SplashAnimation(navController = navController)
         }
-
+        composable(route = Navigation.userType.route){
+            UserType(navController = navController)
+        }
         composable(route = Navigation.Login.route){
             Login(navController = navController)
+        }
+        composable(route = Navigation.StudentLogin.route){
+            StudentLogin(navController = navController)
+        }
+        composable(route = Navigation.Home.route){
+            MainScreen(navController = navController)
+        }
+        composable(route = Navigation.Attendance.route){
+            AttendanceMain(navController = navController)
         }
     }
 }

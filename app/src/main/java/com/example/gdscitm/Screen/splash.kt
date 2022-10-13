@@ -1,5 +1,7 @@
 package com.example.gdscitm.Screen
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -15,15 +17,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LiveData
 import androidx.navigation.NavHostController
 import com.example.gdscitm.R
+import com.example.gdscitm.database.loginDatabase
 import com.example.gdscitm.navigation.Navigation
+import com.example.gdscitm.database.Login
+import com.example.gdscitm.datastore.StoreUserEmail
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@SuppressLint("CoroutineCreationDuringComposition")
+
+private fun readData(data: LiveData<List<Login>>) {
+    Log.d("readData","${data.value?.get(0)?.email}")
+}
+
+
+
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun SplashAnimation(navController : NavHostController) {
     var startAnimation by remember {
@@ -36,16 +54,33 @@ fun SplashAnimation(navController : NavHostController) {
             durationMillis = 3000
         )
     )
+    // context
+    val context = LocalContext.current
+    // datastore Email
+    val dataStore = StoreUserEmail(context)
+    // get saved email
+    val savedEmail = dataStore.getEmail.collectAsState(initial = "")
+    Log.d("emaildata",savedEmail.value.toString())
+
 
     LaunchedEffect(key1 = true){
         startAnimation = true
         delay(4000)
         // done: add navigation
-        navController.navigate(Navigation.Login.route){
-            popUpTo(Navigation.Splash.route){
-                inclusive = true
+        if(savedEmail.value.toString() != ""){
+            navController.navigate(Navigation.Home.route){
+                popUpTo(Navigation.Splash.route){
+                    inclusive = true
+                }
+            }
+        }else{
+            navController.navigate(Navigation.userType.route){
+                popUpTo(Navigation.Splash.route){
+                    inclusive = true
+                }
             }
         }
+
     }
     Splash(alphaval =alphaAnim.value )
 }

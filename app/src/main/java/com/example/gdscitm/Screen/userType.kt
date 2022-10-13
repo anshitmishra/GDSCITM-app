@@ -22,10 +22,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.gdscitm.R
+import com.example.gdscitm.global.mainGlobal
+import com.example.gdscitm.navigation.Navigation
 
 @Composable
-fun UserType() {
+fun UserType(navController : NavHostController) {
     Surface(modifier = Modifier.fillMaxSize()) {
 
         Column(modifier = Modifier
@@ -33,15 +37,21 @@ fun UserType() {
             Image(painter = painterResource(id = R.drawable.splash_type), contentDescription = "splash image", modifier = Modifier
                 .fillMaxWidth()
                 .size(400.dp))
-            Column(modifier = Modifier.padding(50.dp,10.dp) ) {
-                Text(text = "Welcome To GDSCITM ", fontSize = 20.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Left,modifier = Modifier.fillMaxWidth())
+            Column(modifier = Modifier.padding(50.dp,10.dp), horizontalAlignment = Alignment.CenterHorizontally ) {
+                Text(text = "Welcome To GDSCITM ", fontSize = 25.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center,modifier = Modifier.fillMaxWidth())
                 Spacer(modifier = Modifier.padding(0.dp,10.dp))
-                Button(onClick = { /*TODO*/ }, modifier = Modifier
+                Button(onClick = {
+                    mainGlobal.studentType = "T"
+                    navController.navigate(Navigation.Login.route)
+                                 }, modifier = Modifier
                     .width(270.dp),
                     colors = ButtonDefaults.buttonColors( Color(87, 85, 217))) {
                     Text(text = "Teacher", color = Color(0xFFFFFFFF))
                 }
-                Button(onClick = { /*TODO*/ }, modifier = Modifier.width(270.dp), colors = ButtonDefaults.buttonColors( Color.Transparent), border = BorderStroke(2.dp,Color(87, 85, 217))) {
+                Button(onClick = {
+                    mainGlobal.studentType = "S"
+                    navController.navigate(Navigation.StudentLogin.route)
+                }, modifier = Modifier.width(270.dp), colors = ButtonDefaults.buttonColors( Color.Transparent), border = BorderStroke(2.dp,Color(87, 85, 217))) {
                     Text(text = "Student", color = Color(87, 85, 217))
                 }
             }
@@ -56,5 +66,5 @@ fun UserType() {
 @Preview
 @Composable
 fun PrevUserType() {
-    UserType()
+    UserType(rememberNavController())
 }
