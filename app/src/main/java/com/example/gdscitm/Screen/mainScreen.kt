@@ -236,7 +236,6 @@ fun MainContent() {
         loginKey = savedEmail.value.toString(),
         Date = activeDate.toString()
     )
-    Log.d("asdhasgdkas",saveType.value.toString())
 //    studenttimetable
     val resulttimetable = if(saveType.value.toString() == "T") {
         userApi.timetable(data2)
@@ -346,7 +345,7 @@ fun BottomBar(navController : NavHostController) {
             imageVector = Icons.Default.Add,
             contentDescription = "attendance",
         )}), label = ({ Text(text = "attendance", fontWeight = FontWeight.Bold, fontSize = 16.sp)}))
-        BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = ({ Icon(
+        BottomNavigationItem(selected = false, onClick = {  }, icon = ({ Icon(
             imageVector = Icons.Default.Settings,
             contentDescription = "setting"
         )}), label = ({ Text(text = "setting", fontWeight = FontWeight.Bold, fontSize = 16.sp)}))
