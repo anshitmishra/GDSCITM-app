@@ -1,6 +1,5 @@
 package com.example.gdscitm.database
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -11,7 +10,6 @@ import androidx.room.Query
 interface loginDAO {
     @Insert(onConflict = IGNORE)
     suspend fun loginInsert(login: Login)
-
     @Delete
     suspend fun deleteLogins(login: Login)
 

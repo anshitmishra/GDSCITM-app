@@ -1,6 +1,5 @@
 package com.example.gdscitm.ktor.apis
 
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
@@ -18,7 +17,7 @@ class apis {
             KtorClient.httpClient.post("http://10.0.2.2:5000/present/image")
 
 
-    suspend fun uploadImage(text: String, byteArray: Bitmap): Boolean {
+    suspend fun uploadImage(text: String, byteArray: String): Boolean {
         return try {
             val path = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES

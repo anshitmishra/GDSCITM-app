@@ -7,6 +7,6 @@ sealed class Navigation(val route :String){
     object StudentLogin: Navigation(route = "studentloginscreen")
     object Home: Navigation(route = "homescreen")
     object Attendance: Navigation(route = "attendancescreen")
-    object Attendancelistscreen: Navigation(route = "Attendancelistscreen/{id}/{type}")
+    object Attendancelistscreen: Navigation(route = "Attendancelistscreen/{id}/{tempid}/{period}/{type}")
 
 }

@@ -1,5 +1,7 @@
 package com.example.gdscitm.Screen
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -20,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -32,8 +33,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberAsyncImagePainter
 import com.example.gdscitm.R
 import com.example.gdscitm.datastore.StoreUserEmail
 import com.example.gdscitm.datastore.userType
@@ -47,9 +46,14 @@ import com.example.gdscitm.network.model.schedule.dayData
 import com.example.gdscitm.network.model.schedule.scheduleDataSend
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import org.apache.commons.io.FileUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
 
 @Composable
 fun AttendanceMain(navController : NavHostController) {
@@ -80,6 +84,7 @@ fun AttendanceMain(navController : NavHostController) {
     }
 }
 
+@SuppressLint("MutableCollectionMutableState")
 @Composable
 fun MainAttendanceView(navController: NavHostController) {
     // context
@@ -90,9 +95,8 @@ fun MainAttendanceView(navController: NavHostController) {
     val savedEmail = dataStore.getEmail.collectAsState(initial = "")
 
     // datastore Email
-    val userTypeStorage = userType(context)
     // get saved email
-    val saveType = userTypeStorage.getType.collectAsState(initial = "")
+//    val saveType = userTypeStorage.getType.collectAsState(initial = "")
     //api init
     val userApi = ApiUtilites.getInstance().create(ApisInterface::class.java)
     //sending data from local storage
@@ -101,7 +105,7 @@ fun MainAttendanceView(navController: NavHostController) {
     }
     val data = scheduleDataSend(
         loginKey = savedEmail.value.toString(),
-        Date = activeDate.toString()
+        Date = activeDate
     )
 
 
@@ -128,7 +132,7 @@ fun MainAttendanceView(navController: NavHostController) {
     }
     val data2 = attendancelistsenddate(
         loginKey = savedEmail.value.toString(),
-        Date = activeDate.toString()
+        Date = activeDate
     )
     val result2 = userApi.attendancelist(data2)
     result2.enqueue(object : Callback<listdata>{
@@ -181,7 +185,7 @@ fun MainAttendanceView(navController: NavHostController) {
                      ) {
                      Column(modifier = Modifier
                          .padding(10.dp)
-                         .clickable { activeDate = data.date.toString() },
+                         .clickable { activeDate = data.date },
                          horizontalAlignment = Alignment.CenterHorizontally
                      ) {
                          if (data.today) {
@@ -197,7 +201,7 @@ fun MainAttendanceView(navController: NavHostController) {
                              )
                          }
                          Text(
-                             text = data.day.toString(), color = Color(0xFFb7b7b7),
+                             text = data.day, color = Color(0xFFb7b7b7),
                              modifier = Modifier.fillMaxWidth(),
                              textAlign = TextAlign.Center,
                              fontSize = 15.sp,
@@ -232,69 +236,90 @@ LazyColumn(){
 }
 
 
-@OptIn(ExperimentalCoilApi::class, ExperimentalFoundationApi::class)
-@Composable
-fun AppContent() {
-
-    var selectImages by remember { mutableStateOf(listOf<Uri>()) }
-
-
-    val galleryLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) {
-            selectImages = it
-        }
-
-
-    Column(
-        Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Button(
-            onClick = { galleryLauncher.launch("image/*") },
-            modifier = Modifier
-                .wrapContentSize()
-                .padding(10.dp)
-        ) {
-            Text(text = "Pick Image From Gallery")
-        }
-        selectImages.forEach{
-            uri -> Image(
-                    painter = rememberAsyncImagePainter(uri),
-                    contentScale = ContentScale.FillWidth,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(16.dp, 8.dp)
-                        .size(100.dp)
-                        .clickable {
-
-                        }
-                )
-        }
-//        LazyVerticalGrid(cells = GridCells.Fixed(3)) {
-//            items(selectImages) { uri ->
-//                Image(
-//                    painter = rememberAsyncImagePainter(uri),
-//                    contentScale = ContentScale.FillWidth,
-//                    contentDescription = null,
-//                    modifier = Modifier
-//                        .padding(16.dp, 8.dp)
-//                        .size(100.dp)
-//                        .clickable {
-//
-//                        }
-//                )
-//            }
-//        }
-
+private fun createFileFromUri(name: String, uri: Uri,context: Context): File? {
+    return try {
+        val stream = context.contentResolver.openInputStream(uri)
+        val file =
+            File.createTempFile(
+                "${name}_${System.currentTimeMillis()}",
+                ".jpg",
+                context.cacheDir
+            )
+        FileUtils.copyInputStreamToFile(stream, file)  // Use this one import org.apache.commons.io.FileUtils
+        file
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
     }
-
 }
 
 @Composable
 fun AttendanceCard(navController : NavHostController,data: listdataItem) {
+    var imageUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    val context = LocalContext.current
+    // datastore Email
+    val dataStore = StoreUserEmail(context)
+    // get saved email
+    val savedEmail = dataStore.getEmail.collectAsState(initial = "")
+
+//    val bitmap =  remember {
+//        mutableStateOf<Bitmap?>(null)
+//    }
+    val temp = "knknslanl"
+
+    var uploadurl by remember {
+        mutableStateOf("")
+    }
+    val classId: RequestBody = RequestBody.create("multipart/form-data".toMediaTypeOrNull(),
+        data.classId
+    )
+    val period : RequestBody = RequestBody.create("multipart/form-data".toMediaTypeOrNull(),
+        data.period
+    )
+    val tid: RequestBody = RequestBody.create("multipart/form-data".toMediaTypeOrNull(),
+        savedEmail.value.toString()
+    )
+    val tempid: RequestBody = RequestBody.create("multipart/form-data".toMediaTypeOrNull(),
+        temp
+    )
+    val userApi2 = ApiUtilites.getInstanceTwo().create(ApisInterface::class.java)
+    val launcher = rememberLauncherForActivityResult(contract =
+    ActivityResultContracts.GetContent()) { uri: Uri? ->
+        imageUri = uri
+        if (uri != null) {
+            var sada = createFileFromUri("tempimaage",uri,context)
+            uploadurl = sada.toString()
+            val file = File(uploadurl)
+            Log.d("asdhjkasbdk",file.toString())
+            val requestFile: RequestBody = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+            val body: MultipartBody.Part =
+                MultipartBody.Part.createFormData("avatar", file.name, requestFile)
+
+
+
+            val result2 = userApi2.updateProfile(1,classId,period,tid,tempid,body)
+            result2.enqueue(object : Callback<String>{
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    Log.d("asdajhsdkasnjdkb",response.toString())
+                }
+
+                override fun onFailure(call: Call<String>, t: Throwable) {
+                    Log.d("asdajhsdkasnjdkb",t.toString())
+                }
+
+            })
+
+            navController.navigate("Attendancelistscreen/${data.classId}/${temp}/${data.period}/c")
+
+        }
+    }
+
     val list  = SwipeAction(
         onSwipe = {
-            navController.navigate("Attendancelistscreen/${data.classId}/l")
+            navController.navigate("Attendancelistscreen/${data.classId}/${temp}/${data.period}/l")
+
         },
         icon = {
             Icon(imageVector = Icons.Default.List, contentDescription = "list icon",modifier = Modifier
@@ -307,7 +332,7 @@ fun AttendanceCard(navController : NavHostController,data: listdataItem) {
 
     val camera  = SwipeAction(
         onSwipe = {
-            navController.navigate("Attendancelistscreen/${data.classId}/c")
+            launcher.launch("image/*")
         },
         icon = {
             Icon(imageVector = Icons.Default.Person, contentDescription = "camera icon",modifier = Modifier

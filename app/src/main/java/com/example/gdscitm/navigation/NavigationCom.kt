@@ -34,8 +34,12 @@ fun Navigation() {
             type = NavType.StringType
         },navArgument("type"){
             type = NavType.StringType
+        },navArgument("tempid"){
+            type = NavType.StringType
+        },navArgument("period"){
+            type = NavType.StringType
         })){
-            saveAttendance(navController = navController,it.arguments?.getString("id").toString(),it.arguments?.getString("type").toString())
+            saveAttendance(navController = navController,it.arguments?.getString("type").toString(),it.arguments?.getString("temp").toString(),it.arguments?.getString("period").toString(),it.arguments?.getString("id").toString())
         }
 
     }

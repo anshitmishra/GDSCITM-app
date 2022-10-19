@@ -91,7 +91,7 @@ Surface(modifier = Modifier.fillMaxSize()) {
                     IconButton(onClick = {
                         passwordVisibility = !passwordVisibility
                     }) {
-                        var passwordPainter = when(passwordVisibility) {
+                        val passwordPainter = when(passwordVisibility) {
                             false ->  R.drawable.ic_visibility_on
                             true ->  R.drawable.ic_visibility_off
                             else ->  R.drawable.ic_visibility_on
@@ -119,6 +119,7 @@ Surface(modifier = Modifier.fillMaxSize()) {
                                         call: Call<login>,
                                         response: Response<login>
                                     ) {
+                                        Log.d("asdksndalsdlamsd",response.body().toString())
                                         if (response.body() != null) {
                                                 if(response.body()!!.message == "password not match"){
                                                     errorMessage = "password not match"
@@ -130,7 +131,7 @@ Surface(modifier = Modifier.fillMaxSize()) {
                                                     navController.navigate(Navigation.Home.route)
                                                     //saving login token in local
                                                     scope.launch {
-                                                        dataStore.saveEmail(response.body()!!.data[0].loginKey.toString())
+                                                        dataStore.saveEmail(response.body()!!.data[0].loginKey)
                                                         userType.saveType("T")
                                                     }
                                                     loginText = "Login account"

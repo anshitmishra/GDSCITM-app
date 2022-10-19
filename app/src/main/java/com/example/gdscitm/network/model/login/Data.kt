@@ -8,5 +8,6 @@ data class Data(
     val userId: String,
     val userProfile: String,
     val userType: String,
-    val username: String
+    val username: String,
+    val roll_no: String
 )
